@@ -16,7 +16,11 @@
                 new MusicHubDbContext();
 
             DbInitializer.ResetDatabase(context);
+<<<<<<< HEAD
             //ResetDatabase(context, shouldDropDatabase: true);
+=======
+
+>>>>>>> f8d6b7f179920837b61c8d31b5c71e575eb1ffce
 
             //Console.WriteLine(ExportAlbumsInfo(context,9));
             Console.WriteLine(ExportSongsAboveDuration(context,4));
@@ -81,7 +85,15 @@
             {
                 Writer = x.Writer.Name,
                 x.Name,
+<<<<<<< HEAD
                 Preformer = x.SongPerformers.Select(x => x.Performer.FirstName + " " + x.Performer.LastName).FirstOrDefault(),
+=======
+                Preformer = x.SongPerformers.Select(x => new 
+                {
+                    FirstName = x.Performer.FirstName,
+                    LastName = x.Performer.LastName
+                }),
+>>>>>>> f8d6b7f179920837b61c8d31b5c71e575eb1ffce
                 Producer = x.Album.Producer.Name,
                 x.Duration
             }).OrderBy(x => x.Name).ThenBy(x => x.Writer).ThenBy(x => x.Preformer).ToList();
@@ -94,14 +106,24 @@
                 sb.AppendLine($"-Song #{i}");
                 sb.AppendLine($"---SongName: {song.Name}");
                 sb.AppendLine($"---Writer: {song.Writer}");
+<<<<<<< HEAD
                 sb.AppendLine($"---Performer: {song.Preformer}");
                 sb.AppendLine($"---AlbumProducer: {song.Producer}");
                 sb.AppendLine($"---Duration: {song.Duration.ToString("c")}");
+=======
+                foreach (var item in song.Preformer)
+                {
+                    sb.AppendLine($"---Performer: {item.FirstName} {item.LastName}");
+                }
+                sb.AppendLine($"---AlbumProducer: {song.Producer}");
+                sb.AppendLine($"---Duration: {song.Duration}");
+>>>>>>> f8d6b7f179920837b61c8d31b5c71e575eb1ffce
 
                 i++;
             }
             return sb.ToString().Trim();
         }
+<<<<<<< HEAD
 
         private static void ResetDatabase(MusicHubDbContext context, bool shouldDropDatabase = false)
         {
@@ -129,5 +151,7 @@
                 "EXEC sp_MSforeachtable @command1='IF OBJECT_ID(''?'') IN (SELECT OBJECT_ID FROM SYS.IDENTITY_COLUMNS) DBCC CHECKIDENT(''?'', RESEED, 0)'";
             context.Database.ExecuteSqlCommand(reseedQuery);
         }
+=======
+>>>>>>> f8d6b7f179920837b61c8d31b5c71e575eb1ffce
     }
 }
