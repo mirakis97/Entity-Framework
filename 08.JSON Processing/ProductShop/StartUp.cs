@@ -32,12 +32,12 @@ namespace ProductShop
             //Console.WriteLine(ImportCategoryProducts(db, jsonString));
 
             //Problem05
-            string result = GetSoldProducts(db);
+            string result = GetUsersWithProducts(db);
             if (!Directory.Exists(RESULT_DIRECTORY_PATH))
             {
                 Directory.CreateDirectory(RESULT_DIRECTORY_PATH);
             }
-            File.WriteAllText($"{RESULT_DIRECTORY_PATH}/GetSoldProducts.json", result);
+            File.WriteAllText($"{RESULT_DIRECTORY_PATH}/GetUsersWithProducts.json", result);
         }
         public static string ImportUsers(ProductShopContext context, string inputJson)
         {
@@ -115,6 +115,59 @@ namespace ProductShop
             string users = JsonConvert.SerializeObject(user, Formatting.Indented);
 
             return users;
+
+        }
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories = context.Categories
+                .OrderByDescending(x => x.CategoryProducts.Count)
+                .Select(x => new
+                {
+                    category = x.Name,
+                    productsCount = x.CategoryProducts.Count,
+                    averagePrice = x.CategoryProducts.Average(np => np.Product.Price).ToString("F2"),
+                    totalRevenue = x.CategoryProducts.Sum(tr => tr.Product.Price).ToString("F2")
+                }).ToList();
+
+            string category = JsonConvert.SerializeObject(categories, Formatting.Indented);
+
+            return category;
+        }
+
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            var users = context.Users
+                .Where(x => x.ProductsSold.Any(s => s.Buyer != null))
+                .Select(x => new
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Age = x.Age,
+                    SoldProducts = new
+                    {
+                        Count = x.ProductsSold.Count,
+                        Products = x.ProductsSold.Select(y => new
+                        {
+                            Name = y.Name,
+                            Price = y.Price
+                        }).ToArray()
+                    }
+                }).OrderByDescending(x => x.SoldProducts.Count).ToArray();
+
+
+            var usersWithProducts = new
+            {
+                usersCount = users.Length,
+                users = users
+            };
+
+            var result = JsonConvert.SerializeObject(usersWithProducts, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            return result;
 
         }
     }
