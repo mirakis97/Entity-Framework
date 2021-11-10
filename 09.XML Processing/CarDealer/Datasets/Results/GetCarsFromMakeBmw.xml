@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-16"?>
+<cars>
+  <car>
+    <id>7</id>
+    <model>1M Coupe</model>
+    <travelled-distance>39826890</travelled-distance>
+  </car>
+  <car>
+    <id>16</id>
+    <model>E67</model>
+    <travelled-distance>476830509</travelled-distance>
+  </car>
+  <car>
+    <id>5</id>
+    <model>E88</model>
+    <travelled-distance>27453411</travelled-distance>
+  </car>
+  <car>
+    <id>13</id>
+    <model>F04</model>
+    <travelled-distance>443756363</travelled-distance>
+  </car>
+  <car>
+    <id>4</id>
+    <model>F04</model>
+    <travelled-distance>418839575</travelled-distance>
+  </car>
+  <car>
+    <id>12</id>
+    <model>F20</model>
+    <travelled-distance>487897422</travelled-distance>
+  </car>
+  <car>
+    <id>8</id>
+    <model>F20</model>
+    <travelled-distance>401291910</travelled-distance>
+  </car>
+  <car>
+    <id>35</id>
+    <model>F20</model>
+    <travelled-distance>284809463</travelled-distance>
+  </car>
+  <car>
+    <id>2</id>
+    <model>F25</model>
+    <travelled-distance>476132712</travelled-distance>
+  </car>
+  <car>
+    <id>6</id>
+    <model>M Roadster E85</model>
+    <travelled-distance>475685374</travelled-distance>
+  </car>
+  <car>
+    <id>14</id>
+    <model>M5 F10</model>
+    <travelled-distance>435603343</travelled-distance>
+  </car>
+  <car>
+    <id>3</id>
+    <model>M5 F10</model>
+    <travelled-distance>140799461</travelled-distance>
+  </car>
+  <car>
+    <id>11</id>
+    <model>M6 E63</model>
+    <travelled-distance>69863204</travelled-distance>
+  </car>
+  <car>
+    <id>10</id>
+    <model>M6 E63</model>
+    <travelled-distance>57189891</travelled-distance>
+  </car>
+  <car>
+    <id>9</id>
+    <model>X6 M</model>
+    <travelled-distance>322292247</travelled-distance>
+  </car>
+  <car>
+    <id>15</id>
+    <model>X6 M</model>
+    <travelled-distance>227443571</travelled-distance>
+  </car>
+  <car>
+    <id>36</id>
+    <model>X6 M</model>
+    <travelled-distance>183346013</travelled-distance>
+  </car>
+</cars>
