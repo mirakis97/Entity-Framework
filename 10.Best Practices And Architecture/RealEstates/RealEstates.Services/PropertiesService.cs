@@ -59,6 +59,17 @@ namespace RealEstates.Services
             return dbContext.Properties.Where(x => x.Price.HasValue)
                 .Average(x => x.Price / (decimal)x.Size) ?? 0;
         }
+        public decimal AveragePriceSquareMeter(int districtId)
+        {
+            return dbContext.Properties.Where(x => x.Price.HasValue && x.DistrictId == districtId)
+                .Average(x => x.Price / (decimal)x.Size) ?? 0;
+        }
+
+        public double AverageSize(int districtId)
+        {
+            return dbContext.Properties.Where(x => x.DistrictId == districtId)
+                .Average(x => x.Size);
+        }
 
         public IEnumerable<PropertyInfoDto> Search(int minPrice, int maxPrice, int minSize, int maxSize)
         {

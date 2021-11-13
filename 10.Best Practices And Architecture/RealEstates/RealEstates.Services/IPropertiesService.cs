@@ -12,6 +12,8 @@ namespace RealEstates.Services
        void Add(string district, int floor, int maxFloor, int size,int yardSize,int year, string propertyType,string bulidingType,int price);
 
         decimal AveragePriceSquareMeter();
-       IEnumerable<PropertyInfoDto> Search(int minPrice,int maxPrice,int minSize,int maxSize);
+        decimal AveragePriceSquareMeter(int districtId);
+        public double AverageSize(int districtId);
+        IEnumerable<PropertyInfoDto> Search(int minPrice,int maxPrice,int minSize,int maxSize);
     }
 }
