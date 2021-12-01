@@ -167,9 +167,15 @@
             {
                 if (!IsValid(employees))
                 {
-                    sb.AppendLine("Invalid Data");
+                    sb.AppendLine(ErrorMessage);
                     continue;
                 }
+                if (!IsUserNameValid(employees.Username))
+                {
+                    sb.AppendLine(ErrorMessage);
+                    continue;
+                }
+
                 Employee employee = new Employee()
                 {
                     Username = employees.Username,
@@ -199,6 +205,19 @@
             context.SaveChanges();
 
             return sb.ToString().TrimEnd();
+        }
+
+        private static bool IsUserNameValid(string username)
+        {
+            foreach (char ch in username)
+            {
+                if (!char.IsLetterOrDigit(ch))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static bool IsValid(object dto)

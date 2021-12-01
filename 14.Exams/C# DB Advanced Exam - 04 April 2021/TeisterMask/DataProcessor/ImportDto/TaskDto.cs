@@ -3,29 +3,29 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Xml.Serialization;
-using TeisterMask.Data.Models.Enums;
 
 namespace TeisterMask.DataProcessor.ImportDto
 {
-    [XmlType("Project")]
-    public class ImportProjets
+    [XmlType("Task")]
+    public class TaskDto
     {
         [Required]
         [MaxLength(40)]
-        [MinLength(3)]
+        [MinLength(2)]
         [XmlElement(ElementName = "Name")]
         public string Name { get; set; }
 
-        [XmlElement(ElementName = "OpenDate")]
         [Required]
+        [XmlElement(ElementName = "OpenDate")]
         public string OpenDate { get; set; }
-
+        [Required]
         [XmlElement(ElementName = "DueDate")]
         public string DueDate { get; set; }
-
-        [XmlArray("Tasks")]
-        public TaskDto[] Task { get; set; }
-        
-
+        [Range(0, 3)]
+        [XmlElement(ElementName = "ExecutionType")]
+        public int ExecutionType { get; set; }
+        [Range(0, 4)]
+        [XmlElement(ElementName = "LabelType")]
+        public int LabelType { get; set; }
     }
 }
