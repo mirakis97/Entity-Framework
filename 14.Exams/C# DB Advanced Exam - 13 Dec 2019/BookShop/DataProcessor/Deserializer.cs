@@ -28,46 +28,35 @@
         public static string ImportBooks(BookShopContext context, string xmlString)
         {
             StringBuilder sb = new StringBuilder();
-            XmlSerializer serializer = new XmlSerializer(typeof(BooksDTO[]), new XmlRootAttribute("Books"));
-            List<Book> booksToAdd = new List<Book>();
-            using (StringReader reader = new StringReader(xmlString))
+            List<Book> bookToAdd = new List<Book>();
+            var booksToImport = XmlConverter.Deserializer<ImportAuthorsDTO>(xmlString, "Books");
+
+            foreach (var books in booksToImport)
             {
-                var bookDtos = (BooksDTO[])serializer.Deserialize(reader);
-
-                foreach (var bookDto in bookDtos)
+                if (!IsValid(books))
                 {
-                    if (!IsValid(bookDto))
-                    {
-                        sb.AppendLine(ErrorMessage);
-                        continue;
-                    }
-
-                    DateTime publishedOn;
-                    bool isValidDate = DateTime.TryParseExact(bookDto.PublishedOn, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out publishedOn);
-
-                    if (!isValidDate)
-                    {
-                        sb.AppendLine(ErrorMessage);
-                        continue;
-                    }
-
-                    Book book = new Book()
-                    {
-                        Genre = (Genre)bookDto.Genre,
-                        Name = bookDto.Name,
-                        Pages = bookDto.Pages,
-                        Price = bookDto.Price,
-                        PublishedOn = publishedOn
-                    };
-
-                    booksToAdd.Add(book);
-
-                    sb.AppendLine(string.Format(SuccessfullyImportedBook, book.Name, book.Price));
+                    sb.AppendLine(ErrorMessage);
+                    continue;
                 }
+                var date = DateTime.ParseExact(books.PublishedOn, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+                ;
+                Book book = new Book()
+                {
+                    Name = books.Name,
+                    Genre = (Genre)books.Genre,
+                    Price = books.Price,
+                    Pages = books.Pages,
+                    PublishedOn = date,
+                };
+
+                bookToAdd.Add(book);
+                sb.AppendLine(string.Format(SuccessfullyImportedBook,books.Name,books.Price));
             }
 
-            context.Books.AddRange(booksToAdd);
+            context.Books.AddRange(bookToAdd);
             context.SaveChanges();
+
             return sb.ToString().TrimEnd();
         }
 
@@ -75,17 +64,16 @@
         {
             StringBuilder sb = new StringBuilder();
             List<Author> authorsToAdd = new List<Author>();
-            AuthorsDto[] authorsDtos = JsonConvert.DeserializeObject<AuthorsDto[]>(jsonString);
+            var importAuthors = JsonConvert.DeserializeObject<IEnumerable<ImportBooks>>(jsonString);
 
-            foreach (var authorsDto in authorsDtos)
+            foreach (var importAuthor in importAuthors)
             {
-                if (!IsValid(authorsDto))
+                if (!IsValid(importAuthor))
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
-
-                if (authorsToAdd.Any(x => x.Email == authorsDto.Email))
+                if (authorsToAdd.Any(x => x.Email == importAuthor.Email))
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
@@ -93,27 +81,26 @@
 
                 Author author = new Author()
                 {
-                    FirstName = authorsDto.FirstName,
-                    LastName = authorsDto.LastName,
-                    Phone = authorsDto.Phone,
-                    Email = authorsDto.Email
+                    FirstName = importAuthor.FirstName,
+                    LastName = importAuthor.LastName,
+                    Phone = importAuthor.Phone,
+                    Email = importAuthor.Email,
                 };
 
-                foreach (var authorBookDto in authorsDto.Books)
+                foreach (var books in importAuthor.Books)
                 {
-                    if (!authorBookDto.Id.HasValue)
+                    if (!books.Id.HasValue)
                     {
                         continue;
                     }
 
-                    Book book = context.Books.FirstOrDefault(x => x.Id == authorBookDto.Id);
-
+                    Book  book = context.Books.FirstOrDefault(x => x.Id == books.Id);
                     if (book == null)
                     {
                         continue;
                     }
 
-                    author.AuthorsBooks.Add(new AuthorBook()
+                    author.AuthorsBooks.Add(new AuthorBook
                     {
                         Book = book,
                         Author = author
@@ -125,10 +112,8 @@
                     sb.AppendLine(ErrorMessage);
                     continue;
                 }
-
                 authorsToAdd.Add(author);
-                sb.AppendLine(String.Format(SuccessfullyImportedAuthor, author.FirstName + " " + author.LastName,
-                    author.AuthorsBooks.Count));
+                sb.AppendLine(string.Format(SuccessfullyImportedAuthor, author.FirstName + " " + author.LastName, author.AuthorsBooks.Count));
             }
 
             context.Authors.AddRange(authorsToAdd);

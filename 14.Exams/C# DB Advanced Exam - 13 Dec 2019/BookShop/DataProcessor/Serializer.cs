@@ -1,7 +1,6 @@
 ﻿namespace BookShop.DataProcessor
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -18,57 +17,42 @@
     {
         public static string ExportMostCraziestAuthors(BookShopContext context)
         {
-            var authors = context.Authors
-         .Select(x => new
-         {
-             FullName = x.FirstName + " " + x.LastName,
-             AuthorBook = x.AuthorsBooks.OrderByDescending(p => p.Book.Price)
-             .Select(b => new
-             {
-                 bookName = b.Book.Name,
-                 price = b.Book.Price.ToString("F2")
-             })
-             .ToList()
-         }).ToList()
-         .OrderByDescending(x => x.AuthorBook.Count())
-         .ThenBy(x => x.FullName);
+            var result = context.Authors
+                .ToArray()
+                .Select(x => new
+                {
+                    AuthorName = x.FirstName + " " + x.LastName,
+                    Books = x.AuthorsBooks.OrderByDescending(b => b.Book.Price).Select(b => new
+                    {
+                        BookName = b.Book.Name,
+                        BookPrice = b.Book.Price.ToString("f2")
+                    })
+                    
+                }).OrderByDescending(x => x.Books.Count()).ThenBy(x => x.AuthorName);
 
-            string books = JsonConvert.SerializeObject(authors, Formatting.Indented);
 
-            return books;
-        }
+			var json = JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
+			return json;
+		}
 
         public static string ExportOldestBooks(BookShopContext context, DateTime date)
         {
-            List<ExportBookDto> exportBooks = context.Books
-                .Where(x => x.PublishedOn < date && x.Genre == Genre.Science)
-                .ToList()
-                .OrderByDescending(x => x.Pages)
-                .ThenByDescending(x => x.PublishedOn)
-                .Take(10)
-                .Select(x => new ExportBookDto
-                {
-                    Date = x.PublishedOn.ToString("d",CultureInfo.InvariantCulture),
-                    Name = x.Name,
-                    Pages = x.Pages
+            var projects = context.Books
+            .ToArray()
+            .Where(p => p.PublishedOn < date && p.Genre == Genre.Science)
+            .OrderByDescending(x => x.Pages).ThenByDescending(x => x.PublishedOn)
+            .Take(10)
+            .Select(x => new ExportOldestBook
+            {
+                Name = x.Name,
+                Date = x.PublishedOn.ToString("d", CultureInfo.InvariantCulture),
+                Pages = x.Pages
+            })
+            .ToArray();
 
-                }).ToList();
+            var xml = XmlConverter.Serialize(projects, "Books");
 
-
-
-            StringBuilder sb = new StringBuilder();
-            var namespaces = new XmlSerializerNamespaces();
-            namespaces.Add(String.Empty, String.Empty);
-
-
-
-            XmlSerializer xmlSerializer =
-            new XmlSerializer(typeof(List<ExportBookDto>), new XmlRootAttribute("Books"));
-
-
-            xmlSerializer.Serialize(new StringWriter(sb), exportBooks, namespaces);
-
-            return sb.ToString().Trim();
+            return xml;
         }
     }
 }
